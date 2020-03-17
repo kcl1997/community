@@ -70,6 +70,7 @@ public class GItHubProvider {
         try {
             Response response = client.newCall(request).execute();
             String str = response.body().string();
+            //System.out.println(str);
             //string json对象 -> java类对象
             GitHubUser githubUser = JSON.parseObject(str, GitHubUser.class);
             return githubUser;
