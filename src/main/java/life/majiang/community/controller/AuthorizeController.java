@@ -5,10 +5,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.UUID;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import life.majiang.community.dto.AccessTokenDTO;
 import life.majiang.community.dto.GitHubUser;
@@ -43,7 +47,8 @@ public class AuthorizeController {
 
     //第二步，用户点击登录按钮返回一个callback地址和code，根据code，获取用户的accessToken
    @GetMapping("/callback")
-    public String callback(@RequestParam(name = "code") String code, @RequestParam(name = "state")String state, HttpServletRequest request){
+    public ModelAndView callback(@RequestParam(name = "code") String code, @RequestParam(name = "state")String state,
+                                 HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes){
        AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
        accessTokenDTO.setCode(code);
        accessTokenDTO.setRediret_uri(redirectUri);
@@ -57,24 +62,35 @@ public class AuthorizeController {
        GitHubUser gitHubUser = githubProvider.getUser(accessToken);
        System.out.println(gitHubUser);
 
-       if(gitHubUser != null){
-           //登录成功，写cookie和session
-           request.getSession().setAttribute("user",gitHubUser);
-           //保存session时，自动保存cookie
+       if(gitHubUser != null && gitHubUser.getLogin().length() > 0){
 
            User user = new User();
-           user.setToken(UUID.randomUUID().toString());
+           //使用token辨认用户
+           String token = UUID.randomUUID().toString();
+           user.setToken(token);
            user.setName(gitHubUser.getLogin());
            user.setAccountId(String.valueOf(gitHubUser.getId()));
            user.setGmtCreate(System.currentTimeMillis());
            user.setGmtModified(user.getGmtCreate());
            userMapper.insert(user);
+
+           //登录成功，写cookie和session
+           request.getSession().setAttribute("user",user);
+
+
+           //浏览器本地添加cookie
+           response.addCookie(new Cookie("token",token));
            //跳转至首页
-           return "redirect:index";
+           ModelAndView modelAndView = new ModelAndView("redirect:index");
+           redirectAttributes.addFlashAttribute("msg", "登录成功");
+           return modelAndView;
+
 
        }else{
-           //登录失败，重新登录
-           return "redirect:index";
+
+           ModelAndView modelAndView = new ModelAndView("redirect:index");
+           redirectAttributes.addFlashAttribute("msg", "登录失败");
+           return modelAndView;
        }
 
     }

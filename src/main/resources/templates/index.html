@@ -5,11 +5,14 @@
     <title>码匠社区</title>
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
     <link rel="stylesheet" th:href="@{/css/bootstrap-theme.min.css}"/>
-    <script th:src="@{/js/jquery.js}" type="javascript"></script>
+    <!--<script th:src="@{/js/jquery.js}" type="javascript" charset="utf-8"></script>-->
+    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
     <script th:src="@{/js/bootstrap.min.js}" type="javascript"></script>
-
 </head>
 <body>
+
+
+
 <nav class="navbar navbar-default">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -28,7 +31,7 @@
             <ul class="nav navbar-nav navbar-right">
 
                 <li class="dropdown" th:if="${session.user!=null}">
-                    <a href="#" th:text="'你好,'+${session.user.login}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="caret"></span></a>
+                    <a href="#" th:text="${session.user.getName()}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="#">消息中心</a></li>
                         <li><a href="#">个人资料</a></li>
@@ -37,7 +40,11 @@
                 </li>
                 <!--第一步获取code-->
                 <!--unless == if not -->
+                <li>
+                    <a href="#" th:text="${msg}"></a>
+                </li>
                 <li th:unless="${session.user!=null}">
+
                     <a href="https://github.com/login/oauth/authorize?client_id=Iv1.18039b8df20e807b&redirect_uri=http://localhost:9002/callback&scope=user&state=1">登录</a>
                 </li>
 
@@ -46,7 +53,7 @@
         </div>
     </div>
 </nav>
-
-
 </body>
+
+
 </html>
