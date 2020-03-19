@@ -1,0 +1,58 @@
+body{
+    background-color: #efefef;
+
+}
+
+@media (max-width:768px) {
+    .main{
+        background-color: white;
+        margin: 2px;
+    }
+    .form-control{
+        display: inline;
+        width: 70%;
+        margin-right: 10px;
+    }
+    nav ul{
+        float: right;
+    }
+    .nav>li{
+        display: inline-block;
+    }
+
+    .nav>li>a {
+        padding: 10px 15px;
+    }
+    #bs-example-navbar-collapse-1  input{
+        width: 82%;
+    }
+    #bs-example-navbar-collapse-1  button{
+        width: 15%;
+    }
+
+
+}
+
+@media (min-width: 769px) {
+    .main{
+        background-color: white;
+        margin: 30px;
+    }
+}
+
+
+.img_avatar{
+    width: 40px;
+    height: 40px;
+}
+
+.btn-publish{
+    float: right;
+    margin-bottom: 15px;
+}
+
+.text-desc{
+    font-size: 12px;
+    font-weight: normal;
+    color: #999;
+}

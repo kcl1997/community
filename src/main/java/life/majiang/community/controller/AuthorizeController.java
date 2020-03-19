@@ -44,8 +44,9 @@ public class AuthorizeController {
     @Autowired
     private UserMapper userMapper;
 
-
-    //第二步，用户点击登录按钮返回一个callback地址和code，根据code，获取用户的accessToken
+    /**
+     *     第二步，用户点击登录按钮返回一个callback地址和code，根据code，获取用户的accessToken
+     */
    @GetMapping("/callback")
     public ModelAndView callback(@RequestParam(name = "code") String code, @RequestParam(name = "state")String state,
                                  HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes){
@@ -55,14 +56,17 @@ public class AuthorizeController {
        accessTokenDTO.setState(state);
        accessTokenDTO.setClient_id(clientId);
        accessTokenDTO.setClient_secret(clientSecret);
-       //根据当前网址，用户id，sercret，获得用户的access_token字符串
+
+       /**
+        *  根据当前网址，用户id，sercret，获得用户的access_token字符串
+        */
        String accessToken = githubProvider.getAccessToken(accessTokenDTO);
 
        //根据accessToken 获取 User信息
        GitHubUser gitHubUser = githubProvider.getUser(accessToken);
        System.out.println(gitHubUser);
 
-       if(gitHubUser != null && gitHubUser.getLogin().length() > 0){
+       if(gitHubUser != null && gitHubUser.getLogin().length() > 0 && gitHubUser.getId() != null){
 
            User user = new User();
            //使用token辨认用户
@@ -72,14 +76,17 @@ public class AuthorizeController {
            user.setAccountId(String.valueOf(gitHubUser.getId()));
            user.setGmtCreate(System.currentTimeMillis());
            user.setGmtModified(user.getGmtCreate());
-           userMapper.insert(user);
+           user.setAvatarUrl(gitHubUser.getAvatarUrl());
+            userMapper.insert(user);
 
            //登录成功，写cookie和session
            request.getSession().setAttribute("user",user);
 
 
            //浏览器本地添加cookie
-           response.addCookie(new Cookie("token",token));
+           Cookie cookie = new Cookie("token",token);
+           cookie.setMaxAge(3*24*3600);
+           response.addCookie(cookie);
            //跳转至首页
            ModelAndView modelAndView = new ModelAndView("redirect:index");
            redirectAttributes.addFlashAttribute("msg", "登录成功");

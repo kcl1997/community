@@ -7,9 +7,11 @@ https://elasticsearch.cn/explore
 https://developer.github.com/v3/guides/managing-deploy-keys/#deploy-key
 
 # 工具
-https://git-scm.com/download
+[Git](https://git-scm.com/download) 
 
-##脚本
+[Flyway](https://flywaydb.org/getstarted/firststeps/maven)
+
+## 脚本
 ```sql
 CREATE TABLE USER (
     ID int AUTO_IINCREMENT PRIMARY KEY NOT NULL ,
@@ -20,4 +22,6 @@ CREATE TABLE USER (
     GMT_MODEIFED BIGINT
     );
 ```
-
+```bash
+mvn flyway:migration
+```
