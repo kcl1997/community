@@ -17,64 +17,19 @@
 <body>
 
 <!--导航栏-->
-<nav class="navbar navbar-default" role="navigation">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
-                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" th:href="@{/index}">码匠社区</a>
-        </div>
-        <!--搜索框和登录信息-->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <form class="navbar-form navbar-left form-inline">
-                <div class="form-group">
-                    <input type="text" class="form-control" style="margin-right: 5px;" placeholder="搜索问题">
-                    <button type="submit" class="btn btn-primary" style="float: right;">搜索</button>
-                </div>
-            </form>
-            <!--登录信息框-->
-            <ul class="nav navbar-nav navbar-right" >
-                <li class="nav" th:if="${session.user != null}">
-                    <a th:href="@{/publish}">发布</a>
-                </li>
-                <li class="dropdown" th:if="${session.user!=null}">
-
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"
-                       role="button" aria-haspopup="true" aria-expanded="false">[[${session.user.getName()}]]<span
-                            class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a href="#">消息中心</a></li>
-                        <li><a href="#">个人资料</a></li>
-                        <li><a href="#">退出登录</a></li>
-                    </ul>
-                </li>
-                <!--unless == if not -->
-                <li><a href="#" th:text="${msg}"></a></li>
-                <li th:unless="${session.user!=null}">
-                    <a th:href="${@environment.getProperty('github.login.uri')}">登录</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-
-
-</nav>
+<div th:replace="~{navigation::nav}"></div>
 
 <!--发起问题-->
 <div class="container-fluid main">
     <div class="row">
         <!--左边填写问题信息-->
         <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
-            <h2><span class="glyphicon glyphicon glyphicon-plus" aria-hidden="true"></span> 发起</h2>
+            <h2><span class="glyphicon glyphicon glyphicon-plus" aria-hidden="true"></span>  发起</h2>
             <hr>
             <!--发布信息表单-->
             <form action="/publish" method="post">
+                <!--为更新做准备,保存用户的id-->
+                <input type="hidden" name="id" th:value="${id}">
                 <div class="form-group">
                     <label for="titleInput">问题标题(简单扼要) :</label>
                     <input type="text" th:value="${title}" class="form-control" id="titleInput" name="title"

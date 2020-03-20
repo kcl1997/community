@@ -4,16 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import life.majiang.community.mapper.QuestionMapper;
 import life.majiang.community.mapper.UserMapper;
 import life.majiang.community.model.Question;
 import life.majiang.community.model.User;
+import life.majiang.community.service.QuestionService;
 
 /**
  * 项目名： community
@@ -36,11 +37,18 @@ public class PublishController {
     private QuestionMapper questionMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private QuestionService questionService;
 
+    /**
+     * Post Mapping
+     *  发布或者修改问题内容
+     */
     @PostMapping("/publish")
     public String doPublish(@RequestParam("title")String title,
                             @RequestParam("description")String description,
                             @RequestParam("tag")String tag,
+                            @RequestParam("id")Integer id,
                             HttpServletRequest request,
                             Model model){
         //如果用户未登录，登录失败，保存页面原有的标题，描述，tag
@@ -48,23 +56,8 @@ public class PublishController {
         model.addAttribute("description",description);
         model.addAttribute("tag",tag);
 
-        User user = null;
-        try {
-            Cookie[] cookies = request.getCookies();
-            if(cookies != null && cookies.length > 0){
-                for(Cookie cookie : cookies){
-                    if(cookie.getName().equals("token")){
-                        String  token =  cookie.getValue();
-                        user = userMapper.findByToken(token);
-                        if(user != null) request.getSession().setAttribute("user",user);
-                        break;
-                    }
-                }
-            }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        User user = (User) request.getSession().getAttribute("user");
         if(user == null || user.getName().length() < 1){
             model.addAttribute("error","用户未登录");
             System.out.println("用户未登录");
@@ -93,11 +86,27 @@ public class PublishController {
         question.setDescription(description);
         question.setTag(tag);
         question.setCreator(user.getId());
-        question.setGmtCreate(System.currentTimeMillis());
-        question.setGmtModified(question.getGmtCreate());
-        questionMapper.create(question);
+        question.setId(id);
+
+        questionService.createOrUpdate(question);
+
         //发布成功,挑战到首页
         return "redirect:/index";
     }
+
+    @GetMapping("/publish/{id}")
+    public String edit(@PathVariable(name = "id")Integer id,Model model){
+        //获取问题，并显示到question界面上面去
+        Question question = questionMapper.getById(id);
+        model.addAttribute("title",question.getTitle());
+        model.addAttribute("description",question.getDescription());
+        model.addAttribute("tag",question.getTag());
+        //未更新做准备
+        model.addAttribute("id",question.getId());
+
+        //当点击发布按钮时，应该是更新按钮
+        return "publish";
+    }
+
 }
 
