@@ -14,11 +14,12 @@
     <name>community</name>
     <packaging>jar</packaging>
     <description>community</description>
-
     <properties>
         <java.version>1.8</java.version>
-
     </properties>
+
+
+
 
     <dependencies>
         <dependency>
@@ -47,7 +48,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>1.4.200</version>
+            <version>1.4.197</version>
         </dependency>
         <!--jdbc-->
         <dependency>
@@ -84,6 +85,8 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
+
     </dependencies>
 
     <build>
@@ -94,23 +97,23 @@
             </plugin>
 
             <!--flyway-->
-            <plugin>
-                <groupId>org.flywaydb</groupId>
-                <artifactId>flyway-maven-plugin</artifactId>
-                <version>6.3.1</version>
-                <configuration>
-                    <url>jdbc:h2:~/community</url>
-                    <user>sa</user>
-                    <password>123456</password>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.h2database</groupId>
-                        <artifactId>h2</artifactId>
-                        <version>1.4.200</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.flywaydb</groupId>-->
+                <!--<artifactId>flyway-maven-plugin</artifactId>-->
+                <!--<version>6.3.1</version>-->
+                <!--<configuration>-->
+                    <!--<url>jdbc:h2:~/community</url>-->
+                    <!--<user>sa</user>-->
+                    <!--<password>123456</password>-->
+                <!--</configuration>-->
+                <!--<dependencies>-->
+                    <!--<dependency>-->
+                        <!--<groupId>com.h2database</groupId>-->
+                        <!--<artifactId>h2</artifactId>-->
+                        <!--<version>1.4.197</version>-->
+                    <!--</dependency>-->
+                <!--</dependencies>-->
+            <!--</plugin>-->
             <!--mybatis generator-->
             <plugin>
                 <groupId>org.mybatis.generator</groupId>
@@ -121,7 +124,7 @@
                     <dependency>
                         <groupId>com.h2database</groupId>
                         <artifactId>h2</artifactId>
-                        <version>1.4.200</version>
+                        <version>1.4.197</version>
                     </dependency>
                 </dependencies>
             </plugin>

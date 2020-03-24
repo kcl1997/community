@@ -86,7 +86,7 @@ public class AuthorizeController {
 
            //浏览器本地添加cookie
            Cookie cookie = new Cookie("token",token);
-           cookie.setMaxAge(3*24*3600);
+           cookie.setMaxAge(30*24*3600);
            response.addCookie(cookie);
            //跳转至首页
            ModelAndView modelAndView = new ModelAndView("redirect:index");

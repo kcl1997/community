@@ -41,7 +41,7 @@ public class PublishController {
     private QuestionService questionService;
 
     /**
-     * Post Mapping
+     *  Post Mapping
      *  发布或者修改问题内容
      */
     @PostMapping("/publish")
@@ -94,10 +94,16 @@ public class PublishController {
         return "redirect:/index";
     }
 
+    /**
+     * 根据问题id，显示问题详细内容
+     * @param id
+     * @param model
+     * @return
+     */
     @GetMapping("/publish/{id}")
     public String edit(@PathVariable(name = "id")Integer id,Model model){
         //获取问题，并显示到question界面上面去
-        Question question = questionMapper.getById(id);
+        Question question = questionMapper.selectByPrimaryKey(id);
         model.addAttribute("title",question.getTitle());
         model.addAttribute("description",question.getDescription());
         model.addAttribute("tag",question.getTag());

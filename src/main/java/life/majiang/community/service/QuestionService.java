@@ -1,5 +1,6 @@
 package life.majiang.community.service;
 
+import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,9 +10,12 @@ import java.util.List;
 
 import life.majiang.community.dto.PaginationDTO;
 import life.majiang.community.dto.QuestionDTO;
+import life.majiang.community.exception.CustomizeErrorCode;
+import life.majiang.community.exception.CustomizeException;
 import life.majiang.community.mapper.QuestionMapper;
 import life.majiang.community.mapper.UserMapper;
 import life.majiang.community.model.Question;
+import life.majiang.community.model.QuestionExample;
 import life.majiang.community.model.User;
 
 /**
@@ -43,7 +47,11 @@ public class QuestionService {
         //返回page对象
         PaginationDTO paginationDTO = new PaginationDTO();
         //总数
-        Integer totolCount = questionMapper.count();
+        /**
+         * Integer totolCount = questionMapper.count();
+         */
+        Integer totolCount = (int)questionMapper.countByExample(new QuestionExample());
+
         //总页数
         Integer totolPage;
         if(totolCount % size == 0){
@@ -60,9 +68,18 @@ public class QuestionService {
         Integer offset = size * (page-1);
         //questionDTquestionDTOListOList对象包含用户头像信息
         List<QuestionDTO> questionDTOList = new ArrayList<>();
-        List<Question> questions = questionMapper.list(offset,size);
+        /**
+         *  List<Question> questions = questionMapper.list(offset,size);
+         */
+        List<Question> questions = questionMapper.selectByExampleWithRowbounds(new QuestionExample(), new RowBounds(offset, size));
+
         for(Question question : questions){
-           User user =  userMapper.findById(question.getCreator());
+            /**
+             *  //User user =  userMapper.fi
+             *  ndById(question.getCreator());
+             */
+            User user =  userMapper.selectByPrimaryKey(question.getCreator());
+
             QuestionDTO questionDTO = new QuestionDTO();
             //把question对象的属性拷贝到questionDTO
             BeanUtils.copyProperties(question,questionDTO);
@@ -75,13 +92,20 @@ public class QuestionService {
     }
 
     /**
+     * 我的问题列表，根据用户id -> question的creator 查找QuestionList
      * 查询用户发起的问题
      */
     public  PaginationDTO list(Integer userId,Integer page,Integer size){
         //返回page对象
         PaginationDTO paginationDTO = new PaginationDTO();
         //总数
-        Integer totolCount = questionMapper.countByUserId(userId);
+        /**
+         * Integer totolCount = questionMapper.countByUserId(userId);
+         */
+        QuestionExample questionExample = new QuestionExample();
+        questionExample.createCriteria().andCreatorEqualTo(userId);
+        Integer totolCount = (int)questionMapper.countByExample(questionExample);
+
         //总页数
         Integer totolPage;
         if(totolCount % size == 0){
@@ -98,9 +122,19 @@ public class QuestionService {
         Integer offset = size * (page-1);
         //questionDTquestionDTOListOList对象包含用户头像信息
         List<QuestionDTO> questionDTOList = new ArrayList<>();
-        List<Question> questions = questionMapper.listByUserId(userId,offset,size);
+        /**
+         *  List<Question> questions = questionMapper.listByUserId(userId,offset,size);
+         */
+        QuestionExample example = new QuestionExample();
+        example.createCriteria().andCreatorEqualTo(userId);
+        List<Question> questions = questionMapper.selectByExampleWithRowbounds(example, new RowBounds(offset, size));
+
         for(Question question : questions){
-            User user =  userMapper.findById(question.getCreator());
+            /**
+             *
+             *  //User user =  userMapper.findById(question.getCreator());
+             */
+            User user =  userMapper.selectByPrimaryKey(question.getCreator());
             QuestionDTO questionDTO = new QuestionDTO();
             //把question对象的属性拷贝到questionDTO
             BeanUtils.copyProperties(question,questionDTO);
@@ -118,10 +152,18 @@ public class QuestionService {
      * @return
      */
     public QuestionDTO getById(Integer id){
-        Question question = questionMapper.getById(id);
+        Question question = questionMapper.selectByPrimaryKey(id);
+        /**
+         * 处理异常
+         * 问题没找到
+         */
+        if(question == null){
+            throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
+        }
+
         QuestionDTO questionDTO = new QuestionDTO();
         BeanUtils.copyProperties(question,questionDTO);
-        User user = userMapper.findById(question.getCreator());
+        User user = userMapper.selectByPrimaryKey(question.getCreator());
         questionDTO.setUser(user);
         return questionDTO;
     }
@@ -137,11 +179,30 @@ public class QuestionService {
             //创建
             question.setGmtCreate(System.currentTimeMillis());
             question.setGmtModified(question.getGmtCreate());
-            questionMapper.create(question);
+            //默认值
+            question.setLikeCount(0);
+            question.setCommentCount(0);
+            question.setViewCount(0);
+
+            questionMapper.insert(question);
         }else {
             //更新
-            question.setGmtModified(System.currentTimeMillis());
-            questionMapper.update(question);
+            Question updateQuestion = new Question();
+            updateQuestion.setGmtModified(System.currentTimeMillis());
+            updateQuestion.setTitle(question.getTitle());
+            updateQuestion.setDescription(question.getDescription());
+            updateQuestion.setTag(question.getTag());
+
+            QuestionExample example = new QuestionExample();
+            example.createCriteria().andIdEqualTo(question.getId());
+
+            /**
+             * 处理异常
+             */
+            int updated = questionMapper.updateByExampleSelective(updateQuestion, example);
+            if(updated != 1){
+                throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
+            }
         }
     }
 }

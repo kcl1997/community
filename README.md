@@ -23,6 +23,6 @@ CREATE TABLE USER (
     );
 ```
 ```bash
-mvn flyway:migration
+mvn flyway:migrate
 ```
-mvn -Dmybatis.generator.overwrite=true mybatis-generator:generator
+mvn -Dmybatis.generator.overwrite=true mybatis-generator:generate

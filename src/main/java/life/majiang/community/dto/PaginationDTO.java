@@ -11,7 +11,7 @@ import lombok.Data;
  * 文件名   PaginationDTO
  * 创建者
  * 创建时间: 2020/3/19 8:15 PM
- * 描述  ${TODO}
+ * 描述  引入mybatis generator 后就不用 写分页了
  */
 
 @Data

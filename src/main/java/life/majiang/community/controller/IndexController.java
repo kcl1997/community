@@ -23,7 +23,13 @@ public class IndexController {
    @Autowired
    private QuestionService questionService;
 
-
+   /**
+    * 显示主页问题总的列表
+    * @param model
+    * @param page
+    * @param size
+    * @return
+    */
    @GetMapping(value = {"/","/index"})
    public String index( Model model,
                         @RequestParam(name = "page",defaultValue = "1")Integer page,

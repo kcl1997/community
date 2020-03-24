@@ -34,6 +34,7 @@ public class ProfileController {
 
 
     /**
+     *  根据传递的action的值，跳转 到profile 获取相应的问题列表
      * profile 界面有有很多选项卡，action 代表 "id"
      * @return
      */
@@ -61,6 +62,7 @@ public class ProfileController {
             model.addAttribute("sectionName","最新回复");
         }
 
+        //我的问题列表
         PaginationDTO paginationDTO = questionService.list(user.getId(), page, size);
         model.addAttribute("pagination",paginationDTO);
 
