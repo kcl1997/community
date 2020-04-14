@@ -10,6 +10,7 @@ https://developer.github.com/v3/guides/managing-deploy-keys/#deploy-key
 [Git](https://git-scm.com/download) 
 
 [Flyway](https://flywaydb.org/getstarted/firststeps/maven)
+[PostMan](https://chrome.google.com/webstore/detail/tabbed-postman-rest-clien/coohjcphdfgbiolnekdpbcijmhambjff)
 
 ## 脚本
 ```sql

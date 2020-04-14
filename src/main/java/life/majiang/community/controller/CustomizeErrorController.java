@@ -19,15 +19,23 @@ import javax.servlet.http.HttpServletRequest;
  * 描述  ${message} == no message avibiable 解决方法
  */
 
-@Controller
+/**
+ * ErrorController 可以处理所有异常，出页面之外的异常
+ */
+
+@Controller //参数默认（"/error")
 @RequestMapping("${server.error.path:${error.path:/error}}")
 
 public class CustomizeErrorController implements ErrorController {
+
+    /**
+     * 返回页面地址
+     * @return
+     */
     @Override
     public String getErrorPath() {
         return "error";
     }
-
 
     @RequestMapping(produces = MediaType.TEXT_HTML_VALUE)
     public ModelAndView errorHtml(HttpServletRequest request, Model model){
@@ -35,11 +43,11 @@ public class CustomizeErrorController implements ErrorController {
 
         //客户端引起的
         if(status.is4xxClientError()){
-            model.addAttribute("message","你这个请求错了，要不然换个姿势？");
+            model.addAttribute("message","你这个请求错了，要不然换个姿势？4xx异常");
         }
         //服务器引起的
         if(status.is5xxServerError()){
-            model.addAttribute("message","服务器冒烟了，要不然稍后再试试？");
+            model.addAttribute("message","服务器冒烟了，要不然稍后再试试？5xx异常");
         }
         return new ModelAndView("/error");
 

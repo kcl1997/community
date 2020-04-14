@@ -14,12 +14,16 @@ import lombok.Data;
  * 描述  引入mybatis generator 后就不用 写分页了
  */
 
+/**
+ * 包括question list 和 页码信息
+ */
 @Data
 public class PaginationDTO {
 
     //好办
     private List<QuestionDTO> questionDTOs;
     //简单计算
+    //是否有 上一页下一页，第一页最后一页
     private boolean showPrevious;
     private boolean showFirstPage;
     private boolean showNext;

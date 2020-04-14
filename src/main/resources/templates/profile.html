@@ -37,8 +37,9 @@
                     </a>
                 </div>
                 <div class="media-body">
-                    <h4 class="media-heading" style="  cursor: pointer; color: #155faa; font-size: 18px;"
-                        th:text="${question.title}"></h4>
+                    <h4 class="media-heading"  style="  cursor: pointer; color: #155faa; font-size: 18px;">
+                        <a th:href="@{'/question/'+${question.getId()}}"  th:text="${question.title}"></a>
+                    </h4>
                     &nbsp;&nbsp;&nbsp;
                     <span class="text-desc" th:text="${question.getCommentCount()}"></span> 个回复 •
                     <span class="text-desc" th:text="${question.getViewCount()}"></span> 次浏览 •

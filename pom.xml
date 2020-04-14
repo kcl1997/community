@@ -85,7 +85,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
+        <!--apache的工具包-->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.9</version>
+        </dependency>
 
     </dependencies>
 

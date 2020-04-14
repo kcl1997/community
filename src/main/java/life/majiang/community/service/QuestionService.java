@@ -12,6 +12,7 @@ import life.majiang.community.dto.PaginationDTO;
 import life.majiang.community.dto.QuestionDTO;
 import life.majiang.community.exception.CustomizeErrorCode;
 import life.majiang.community.exception.CustomizeException;
+import life.majiang.community.mapper.QuestionExtMapper;
 import life.majiang.community.mapper.QuestionMapper;
 import life.majiang.community.mapper.UserMapper;
 import life.majiang.community.model.Question;
@@ -35,11 +36,14 @@ public class QuestionService {
     private QuestionMapper questionMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private QuestionExtMapper questionExtMapper;
 
     /**
      *
      * @param page
      * @param size
+     *  主页显示的问题
      * @return 返回page对象 包括5个问题，和页码信息
      */
     public PaginationDTO list(Integer page, Integer size) {
@@ -47,11 +51,7 @@ public class QuestionService {
         //返回page对象
         PaginationDTO paginationDTO = new PaginationDTO();
         //总数
-        /**
-         * Integer totolCount = questionMapper.count();
-         */
         Integer totolCount = (int)questionMapper.countByExample(new QuestionExample());
-
         //总页数
         Integer totolPage;
         if(totolCount % size == 0){
@@ -69,17 +69,32 @@ public class QuestionService {
         //questionDTquestionDTOListOList对象包含用户头像信息
         List<QuestionDTO> questionDTOList = new ArrayList<>();
         /**
+         *  拿到该页的问题list
+         *  原来手写的sql语句
          *  List<Question> questions = questionMapper.list(offset,size);
          */
         List<Question> questions = questionMapper.selectByExampleWithRowbounds(new QuestionExample(), new RowBounds(offset, size));
 
-        for(Question question : questions){
-            /**
-             *  //User user =  userMapper.fi
-             *  ndById(question.getCreator());
-             */
-            User user =  userMapper.selectByPrimaryKey(question.getCreator());
+        /**
+         * 按照时间排序
+         * 这是按照页面来排序，排序的结果只在一个页面内，对全局无效，好像没啥用
+         */
+//        Collections.sort(questions, new Comparator<Question>(){
+//            public int compare(Question o1, Question o2) {
+//                //排序属性
+//                if(o1.getGmtCreate() < o2.getGmtCreate()){
+//                    return -1;
+//                }
+//                if(o1.getGmtCreate() == o2.getGmtCreate()){
+//                    return 0;
+//                }
+//                return 1;
+//            }
+//        });
 
+        //questionDTO 使 question 与 user 关联
+        for(Question question : questions){
+            User user =  userMapper.selectByPrimaryKey(question.getCreator());
             QuestionDTO questionDTO = new QuestionDTO();
             //把question对象的属性拷贝到questionDTO
             BeanUtils.copyProperties(question,questionDTO);
@@ -95,13 +110,10 @@ public class QuestionService {
      * 我的问题列表，根据用户id -> question的creator 查找QuestionList
      * 查询用户发起的问题
      */
-    public  PaginationDTO list(Integer userId,Integer page,Integer size){
+    public  PaginationDTO list(Long userId,Integer page,Integer size){
         //返回page对象
         PaginationDTO paginationDTO = new PaginationDTO();
         //总数
-        /**
-         * Integer totolCount = questionMapper.countByUserId(userId);
-         */
         QuestionExample questionExample = new QuestionExample();
         questionExample.createCriteria().andCreatorEqualTo(userId);
         Integer totolCount = (int)questionMapper.countByExample(questionExample);
@@ -130,10 +142,6 @@ public class QuestionService {
         List<Question> questions = questionMapper.selectByExampleWithRowbounds(example, new RowBounds(offset, size));
 
         for(Question question : questions){
-            /**
-             *
-             *  //User user =  userMapper.findById(question.getCreator());
-             */
             User user =  userMapper.selectByPrimaryKey(question.getCreator());
             QuestionDTO questionDTO = new QuestionDTO();
             //把question对象的属性拷贝到questionDTO
@@ -147,21 +155,24 @@ public class QuestionService {
     }
 
     /**
+     * 根据question id 查看问题
      * 获取问题详细界面
      * @param id
      * @return
      */
-    public QuestionDTO getById(Integer id){
+    public QuestionDTO getById(Long id){
         Question question = questionMapper.selectByPrimaryKey(id);
         /**
+         *
          * 处理异常
-         * 问题没找到
+         * 问题没找到  @ControllerAdvice 进行处理
          */
         if(question == null){
             throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
         }
 
         QuestionDTO questionDTO = new QuestionDTO();
+        //                         source   target
         BeanUtils.copyProperties(question,questionDTO);
         User user = userMapper.selectByPrimaryKey(question.getCreator());
         questionDTO.setUser(user);
@@ -184,7 +195,7 @@ public class QuestionService {
             question.setCommentCount(0);
             question.setViewCount(0);
 
-            questionMapper.insert(question);
+            questionMapper.insertSelective(question);
         }else {
             //更新
             Question updateQuestion = new Question();
@@ -197,13 +208,29 @@ public class QuestionService {
             example.createCriteria().andIdEqualTo(question.getId());
 
             /**
-             * 处理异常
+             * 如果问题id未找到，处理异常  @ControllerAdvice进行处理
              */
             int updated = questionMapper.updateByExampleSelective(updateQuestion, example);
             if(updated != 1){
                 throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
             }
         }
+    }
+
+
+
+    /**
+     * 访问question ，增加阅读数
+     * @param id
+     */
+    public void incView(Long id) {
+
+        Question question = new Question();
+        question.setId(id);
+        question.setViewCount(1);
+
+        questionExtMapper.incView(question);
+
     }
 }
 

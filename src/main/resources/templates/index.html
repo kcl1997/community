@@ -15,9 +15,19 @@
 
     <link rel="stylesheet" th:href="@{/css/community.css}"/>
 </head>
+
+<script type="application/javascript">
+    window.onload = function (ev) {
+        // debugger;
+        var closable = window.localStorage.getItem("closable");
+        if(closable == "true"){
+            window.close();
+            window.localStorage.removeItem("closeable");
+        }
+    }
+</script>
+
 <body>
-
-
 <!--导航栏-->
 <div th:replace="~{navigation::nav}"></div>
 

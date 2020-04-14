@@ -43,12 +43,14 @@ public class PublishController {
     /**
      *  Post Mapping
      *  发布或者修改问题内容
+     *  如果question 有id，则是更新数据
+     *  如果没有id，说明是插入新的question
      */
     @PostMapping("/publish")
     public String doPublish(@RequestParam("title")String title,
                             @RequestParam("description")String description,
                             @RequestParam("tag")String tag,
-                            @RequestParam("id")Integer id,
+                            @RequestParam("id")Long id,
                             HttpServletRequest request,
                             Model model){
         //如果用户未登录，登录失败，保存页面原有的标题，描述，tag
@@ -95,13 +97,14 @@ public class PublishController {
     }
 
     /**
+     *
      * 根据问题id，显示问题详细内容
      * @param id
      * @param model
      * @return
      */
     @GetMapping("/publish/{id}")
-    public String edit(@PathVariable(name = "id")Integer id,Model model){
+    public String edit(@PathVariable(name = "id")Long id,Model model){
         //获取问题，并显示到question界面上面去
         Question question = questionMapper.selectByPrimaryKey(id);
         model.addAttribute("title",question.getTitle());

@@ -20,7 +20,7 @@ import life.majiang.community.service.QuestionService;
  * 文件名   ProfileController
  * 创建者
  * 创建时间: 2020/3/20 12:14 AM
- * 描述  ${TODO}
+ * 描述  我的问题，我的回复，选项卡
  */
 
 @Controller
@@ -35,7 +35,7 @@ public class ProfileController {
 
     /**
      *  根据传递的action的值，跳转 到profile 获取相应的问题列表
-     * profile 界面有有很多选项卡，action 代表 "id"
+     * profile 界面有有很多选项卡，action 代表 "id"， 如question，replies
      * @return
      */
     @GetMapping("/profile/{action}")
@@ -59,7 +59,7 @@ public class ProfileController {
         }else if("replies".equals(action)){
             model.addAttribute("section","replies");
             //同时传递界面标题
-            model.addAttribute("sectionName","最新回复");
+            model.addAttribute("sectionName",   "最新回复");
         }
 
         //我的问题列表

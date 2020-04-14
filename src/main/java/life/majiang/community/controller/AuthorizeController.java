@@ -26,7 +26,7 @@ import life.majiang.community.service.UserService;
  * 文件名   AuthorizeController
  * 创建者
  * 创建时间: 2020/3/15 5:22 PM
- * 描述  ${TODO}
+ * 描述  用户登录控制
  */
 @Controller
 public class AuthorizeController {

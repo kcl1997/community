@@ -31,6 +31,15 @@ public class SessionInterceptor implements HandlerInterceptor {
     @Autowired
     private UserMapper userMapper;
 
+    /**
+     * 每次请求都查询用户是否登录
+     * @param request
+     * @param response
+     * @param handler
+     * @return
+     * @throws Exception
+     */
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Cookie[] cookies = request.getCookies();
